@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR</title>
+    <!-- <link rel="stylesheet" href="{{ url_for('static', path='/static/index.css') }}"> -->
+</head>
+
+<body>
+    <h1>USER SCREEN</h1>
+    <button class="log_out" onclick="location.href='login';"> Log out</button>
+    <div>
+        <form>
+            <p>Upload Image <input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)"></p>
+            <br>
+            <p>Uploaded Image</p>
+            <p><img id="output" width="500" /></p>
+        </form>
+        <p>Uploaded File</p>
+        <p id="uploadedFileName"></p>
+        <p>Text Detected: </p>
+
+        <!-- <p>Information from table invoice</p> -->
+        <p id="text-detected"></p>
+    </div>
+
+    <script>
+        var loadFile = function (event) {
+            // var imageEl = document.getElementById('file');
+            // if(!imageEl) {
+            //     return alert("Do not have image");
+            // }
+            var image = document.getElementById('output');
+            image.src = URL.createObjectURL(event.target.files[0]);
+            // output();
+            var data = new FormData();
+            data.append('image', document.getElementById('file').files[0]);
+            fetch('http://127.0.0.1:8000/ocr', {
+                method: 'POST',
+                // headers: { 'Content-Type': 'multipart/form-data' },
+                body: data
+            }).then(res => res.json())
+                .then(data => {
+                    // typeof data: object
+                    console.log(data);
+                    let uploadedFileName = document.getElementById('uploadedFileName');
+                    let text_detected = document.getElementById('text-detected');
+                    let filename = "";
+                    let text = "";
+                    // for(const p in data) {
+                    //     text += data[p] + '\n';
+                    // }
+                    filename = data['filename'];
+                    text = data['text_detected'];
+                    console.log(text);
+                    uploadedFileName.innerHTML = filename;
+                    text_detected.innerHTML = text;
+                })
+        };
+    </script>
+</body>
+
+</html>
